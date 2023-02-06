@@ -31,8 +31,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_map: ^3.0.0
-  latlong2: ^0.8.1
+  flutter_map: any
+  latlong2: any
+  flutter_map_marker_popup: any
 
 
 
