@@ -1,0 +1,41 @@
+ RaisedButton(
+      child: Marker(point: Latlang, builder: latlang),
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                scrollable: true,
+                title: Text('Login'),
+                content: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Form(
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Trap ID',
+                            icon: Icon(Icons.account_box),
+                          ),
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Set Password',
+                            icon: Icon(Icons.lock),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
+                  RaisedButton(
+                      child: Text("Submit"),
+                      onPressed: () {
+                        // your code
+                      })
+                ],
+              );
+            });
+      },
+    ),
