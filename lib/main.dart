@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:rfg_app/homeScreen.dart';
 import 'package:rfg_app/settings.dart';
 import 'package:rfg_app/listScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
   runApp(const MyApp());
 } // Prueba
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
