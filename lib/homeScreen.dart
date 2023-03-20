@@ -183,6 +183,7 @@ class _ListState extends State<homeScreen> {
         child: const Icon(Icons.directions_boat_outlined),
         onPressed: () {
           var response = _mapController.move(LatLng(55.9125188597277, -3.32137120930613),15);
+          //sets location on screen when pressed to original/user position
         }
         )],
       ),
