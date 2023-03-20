@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rfg_app/Services/auth.dart';
 
 class settingScreen extends StatefulWidget {
   const settingScreen({super.key});
@@ -8,6 +9,7 @@ class settingScreen extends StatefulWidget {
 }
 
 class _ListState extends State<settingScreen> {
+  final AuthService _auth = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,14 @@ class _ListState extends State<settingScreen> {
           title: Text("Settings")
       ),
         body: Center(
-          child: Text("Placeholder"),
+          child:
+          TextButton.icon(
+            icon: Icon(Icons.person),
+            label: Text('logout'),
+            onPressed: () async {
+              await _auth.signOut();
+            },
+          ),
         )
     );
   }
