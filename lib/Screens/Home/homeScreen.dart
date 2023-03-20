@@ -125,7 +125,7 @@ class _ListState extends State<homeScreen> {
       ),
 
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top: 640),
+        padding: const EdgeInsets.only(top: 569),
 
         child: Column (
           children:[
