@@ -4,6 +4,10 @@ class AuthService {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // auth change user stream
+  Stream<User?> get user {
+    return _auth.authStateChanges();
+  }
   // sign in anon
   Future signInAnon() async {
     try {
@@ -21,6 +25,13 @@ class AuthService {
 
 // register with email and password
 
-// sign out
-
+  // sign out
+  Future signOut() async {
+    try {
+      return await _auth.signOut();
+    } catch (error) {
+      print(error.toString());
+      return null;
+    }
+  }
 }

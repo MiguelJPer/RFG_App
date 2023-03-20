@@ -1,4 +1,4 @@
-import 'package:rfg_app/Services/auth.dart';
+import 'package:rfg_app/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -29,7 +29,7 @@ class _SignInState extends State<SignIn> {
               print('error signing in');
             } else {
               print('signed in');
-              print(result);
+              print(result.uid);
             }
           },
         ),
