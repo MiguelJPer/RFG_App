@@ -56,7 +56,7 @@ class _ListState extends State<homeScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       scrollable: true,
-                      title: Text('Trap Releaase'),
+                      title: Text('Trap Release'),
                       content: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Form(
