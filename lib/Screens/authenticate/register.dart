@@ -1,21 +1,22 @@
-import 'package:rfg_app/Screens/loading.dart';
 import 'package:rfg_app/Services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rfg_app/Screens/authenticate/authenticate.dart';
 
-class SignIn extends StatefulWidget {
+import '../loading.dart';
+
+class Register extends StatefulWidget {
   final Function toggleView;
-  SignIn({required this.toggleView});
+  Register({required this.toggleView});
 
   @override
-  _SignInState createState() => _SignInState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _SignInState extends State<SignIn> {
+class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   String error = '';
   bool loading = false;
+
 
   // text field state
   String email = '';
@@ -23,16 +24,16 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() : Scaffold(
+    return loading ? Loading() :Scaffold(
       backgroundColor: Colors.blue[100],
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
         elevation: 0.0,
-        title: Text('Sign in'),
+        title: Text('Sign up'),
         actions: <Widget>[
           ElevatedButton.icon(
             icon: Icon(Icons.person),
-            label: Text('Register'),
+            label: Text('Sign In'),
             onPressed: () => widget.toggleView(),
           ),
         ],
@@ -45,16 +46,12 @@ class _SignInState extends State<SignIn> {
             children: <Widget>[
               SizedBox(height: 20.0),
               TextFormField(
-                validator: (val) => val!.isEmpty ? "Enter an email" : null,
                 onChanged: (val) {
                   setState(() => email = val);
                 },
               ),
               SizedBox(height: 20.0),
               TextFormField(
-                validator: (val) => val!.length < 6
-                    ? "Enter a valid password (6+ characters containing UPPER/Lowercase and numbers)"
-                    : null,
                 obscureText: true,
                 onChanged: (val) {
                   setState(() => password = val);
@@ -66,23 +63,22 @@ class _SignInState extends State<SignIn> {
                     primary: Colors.blue[400],
                   ),
                   child: Text(
-                    'Sign In',
+                    'Register',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       setState(() => loading = true);
-                      dynamic result = await _auth.signInWithEmailAndPassword(
+                      dynamic result = await _auth.registerWithEmailAndPassword(
                           email, password);
-                      // Debug
                       if (result == null) {
                         setState(() {
-                          error = 'Could not enter with those credentials';
+                          error = 'Please supply a valid email';
                           loading = false;
                         });
                       }
                     }
-                  }),
+                  })
             ],
           ),
         ),
