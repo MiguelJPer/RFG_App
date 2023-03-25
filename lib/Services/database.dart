@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:latlong2/latlong.dart';
 
 class DatabaseService {
 
-  final String uid;
+  final String? uid;
   DatabaseService({ required this.uid });
 
   // collection reference
-  final CollectionReference brewCollection = FirebaseFirestore.instance.collection('brews');
+  final CollectionReference data = FirebaseFirestore.instance.collection('Data');
 
-  Future<void> updateUserData(String sugars, String name, int strength) async {
-    return await brewCollection.doc(uid).set({
-      'sugars': sugars,
-      'name': name,
-      'strength': strength,
+  void updateUserData(String? uid, String dev_id, int latlong) {
+    data.add({
+      'uid': uid,
+      'dev_id': dev_id,
+      'loc': latlong,
     });
   }
 

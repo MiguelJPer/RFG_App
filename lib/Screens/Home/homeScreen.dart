@@ -1,11 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:fluster/fluster.dart';
+import 'package:rfg_app/Services/database.dart';
+import 'package:rfg_app/Services/auth.dart';
+import 'package:geolocator/geolocator.dart';
 
 final MapController _mapController = MapController();
 final LatLng initialLocation = LatLng(55.9125188597277, -3.32137120930613);
+final AuthService auth = AuthService();
+//final DatabaseService database = DatabaseService(uid: auth.uid());
+final CollectionReference data = FirebaseFirestore.instance.collection('Data');
+
 
 
 
@@ -167,7 +175,6 @@ class _ListState extends State<homeScreen> {
                           onPressed: () {
                             Navigator.pop(context, 'submit');
                             addMarker(LatLng(55.9125188597277, -3.32137120930613));
-                            addMarker(LatLng(55.911335, -3.314910));
                           },
 
                         )
@@ -198,6 +205,11 @@ class _ListState extends State<homeScreen> {
       MyIcon.add(position);
     }
     );
+    data.add({
+      'uid': auth.uid(),
+      'dev_id': '321',
+      'loc': 'test',
+    });
   }
 }
 

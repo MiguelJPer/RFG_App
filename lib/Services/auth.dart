@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rfg_app/Services/database.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -6,6 +7,12 @@ class AuthService {
   // auth change user stream
   Stream<User?> get user {
     return _auth.authStateChanges();
+  }
+
+  // obtain current user uid
+  String? uid() {
+    final User? user = _auth.currentUser;
+    return user?.uid.toString();
   }
 
   // sign in anon
