@@ -198,4 +198,4 @@ void _getCurrentLocation() async {
   position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   print(position);
   }
-
+//abj
