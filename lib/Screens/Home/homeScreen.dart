@@ -21,10 +21,12 @@ class homeScreen extends StatefulWidget {
 
   @override
   State<homeScreen> createState() => _ListState();
+
 }
 
 class _ListState extends State<homeScreen> {
   List<LatLng> MyIcon = [];
+
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,6 @@ class _ListState extends State<homeScreen> {
                 child: FloatingActionButton(
                     child: const Icon(Icons.add),
                     onPressed: () {
-                      _getCurrentLocation();
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -150,7 +151,8 @@ class _ListState extends State<homeScreen> {
                                 ElevatedButton(
                                   child: Text("Submit"),  onPressed: () async {
                                   Navigator.pop(context, 'submit');
-                                 _getCurrentLocation();
+                                  _getCurrentLocation();
+                                  addMarker(LatLng(x, y));
 
                                 },
 
@@ -166,7 +168,8 @@ class _ListState extends State<homeScreen> {
               FloatingActionButton(
                   child: const Icon(Icons.directions_boat_outlined),
                   onPressed: () {
-                    var response = _mapController.move(LatLng(55.9125188597277, -3.32137120930613),15);
+                    _getCurrentLocation();
+                    var response = _mapController.move(LatLng(x, y),15);
                     //sets location on screen when pressed to original/user position
                   }
               )],
@@ -178,24 +181,31 @@ class _ListState extends State<homeScreen> {
   }
 
 
-
-  void addMarker(userLocation){
-    setState(() {
-      MyIcon.add(userLocation);
-    }
-    );
-  }
-}
+  var x;
+  var y;
 
 
-
-Position? position;
 void _getCurrentLocation() async {
 
   await Geolocator.checkPermission();
   await Geolocator.requestPermission();
 
-  position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   print(position);
+
+  x = position.latitude;
+  y = position.longitude;
+
+  print (x);
+  print (y);
+
   }
-//abj
+
+  void addMarker(LatLng){
+    setState(() {
+      _getCurrentLocation();
+      MyIcon.add(LatLng);
+    }
+    );
+  }
+}
