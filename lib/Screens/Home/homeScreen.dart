@@ -180,7 +180,6 @@ class _ListState extends State<homeScreen> {
 
   }
 
-
   var x;
   var y;
 
@@ -199,6 +198,7 @@ void _getCurrentLocation() async {
   print (x);
   print (y);
 
+  //testing to confirm x and y have crrect values
   }
 
   void addMarker(LatLng){
