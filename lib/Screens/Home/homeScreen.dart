@@ -26,18 +26,6 @@ class homeScreen extends StatefulWidget {
 class _ListState extends State<homeScreen> {
   List<LatLng> MyIcon = [];
 
-  Position? _position;
-  void _getCurrentLocation() async {
-    _position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      if (_position != null) {
-        LatLng userLocation = LatLng(_position!.latitude, _position!.longitude);
-        addMarker(userLocation);
-      }
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
     final markers = MyIcon.map((position) {
@@ -130,6 +118,7 @@ class _ListState extends State<homeScreen> {
                 child: FloatingActionButton(
                     child: const Icon(Icons.add),
                     onPressed: () {
+                      _getCurrentLocation();
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -159,18 +148,11 @@ class _ListState extends State<homeScreen> {
                               ),
                               actions: [
                                 ElevatedButton(
-                                  child: Text("Submit"),
-                                  onPressed: () {
-                                    Navigator.pop(context, 'submit');
-                                    onPressed: () async {
-                                      await _getCurrentLocation();
-                                      if (_position != null) {
-                                        LatLng userLocation = LatLng(_position!.latitude, _position!.longitude);
-                                        addMarker(userLocation);
-                                      };
-                                    };
+                                  child: Text("Submit"),  onPressed: () async {
+                                  Navigator.pop(context, 'submit');
+                                 _getCurrentLocation();
 
-                                  },
+                                },
 
                                 )
                               ],
@@ -197,12 +179,23 @@ class _ListState extends State<homeScreen> {
 
 
 
-  void addMarker(position){
+  void addMarker(userLocation){
     setState(() {
-      MyIcon.add(position);
-      print(position);
+      MyIcon.add(userLocation);
     }
     );
   }
 }
+
+
+
+Position? position;
+void _getCurrentLocation() async {
+
+  await Geolocator.checkPermission();
+  await Geolocator.requestPermission();
+
+  position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  print(position);
+  }
 
