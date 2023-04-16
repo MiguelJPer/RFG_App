@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:fluster/fluster.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 final MapController _mapController = MapController();
 final LatLng initialLocation = LatLng(55.9125188597277, -3.32137120930613);
@@ -27,6 +31,54 @@ class homeScreen extends StatefulWidget {
 class _ListState extends State<homeScreen> {
   List<LatLng> MyIcon = [];
 
+  late Future<Album> futureAlbum;
+  late String order = "";
+
+  /*
+  Creates a new API and updates futureAlbum. Called each time a button is called.
+  In the actual code it will have an "Order" input to change the fetchAlbum() order.
+  */
+  void _getAlbum() {
+    var api = DeviceAPI();
+    futureAlbum = api.fetchAlbum();
+  }
+
+  /*
+  Updates the FutureBuilder widget that shows the information by retrieving the
+  correct data from the Album according to the input order, else it returns
+  an empty string.
+  */
+  Widget _getProperWidget(String order) {
+    if (order != "") {
+      return FutureBuilder<Album>(
+        future: futureAlbum,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (order == "ack") {
+              return Text(
+                snapshot.data!.ack.toString(),
+                textAlign: TextAlign.center,
+              );
+            }
+            if (order == "distance") {
+              return Text(
+                snapshot.data!.distance.toString(),
+                textAlign: TextAlign.center,
+              );
+            }
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+
+          // By default, show a loading spinner.
+          return const CircularProgressIndicator();
+        },
+      );
+    } else {
+      return const Text("");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,23 +94,38 @@ class _ListState extends State<homeScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       scrollable: true,
-                      title: Text('Trap Releaase'),
+                      title: Text('Trap Information'),
                       content: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Form(
                           child: Column(
                             children: <Widget>[
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'User ID',
-                                  icon: Icon(Icons.account_box),
-                                ),
+                          ElevatedButton(
+                          child: Text("Get User ID"),
+                          onPressed: () {
+                            setState(() {
+                              order = "userID";
+                            });
+                            _getAlbum();
+                          },
+                          ),
+                              ElevatedButton(
+                                child: Text("Get Trap ID"),
+                                onPressed: () {
+                    setState(() {
+                    order = "id";
+                    });
+                    _getAlbum();
+
+
+                                },
                               ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  icon: Icon(Icons.lock),
-                                ),
+                              ElevatedButton(
+                                child: Text("Release Trap"),
+                                onPressed: ()  {
+                                  _releaseTrap();
+                                  _getAlbum();
+                                },
                               )
                             ],
                           ),
@@ -66,9 +133,10 @@ class _ListState extends State<homeScreen> {
                       ),
                       actions: [
                         ElevatedButton(
-                          child: Text("Submit"),
+                          child: Text("Exit"),
                           onPressed: () {
-                            Navigator.pop(context, 'submit');
+                            Navigator.pop(context, 'Exit');
+
                           },
 
                         )
@@ -153,7 +221,6 @@ class _ListState extends State<homeScreen> {
                                   Navigator.pop(context, 'submit');
                                   _getCurrentLocation();
                                   addMarker(LatLng(x, y));
-
                                 },
 
                                 )
@@ -209,3 +276,74 @@ void _getCurrentLocation() async {
     );
   }
 }
+
+
+
+
+class DeviceAPI {
+  static const id = "123";
+  /*
+  Function to perform GET request with input String "Order" that changes the
+  $command variable depending on the button pressed. Returns an Album with the
+  GET response.
+   */
+  Future<Album> fetchAlbum() async {
+    final response = await http
+    // URL here would be 'http://$ip/$command/?id=$id'
+        .get(Uri.parse('http://192.168.4.1/release/?id=123'));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return Album.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}
+
+
+void _releaseTrap() async{
+  const id = "123";
+
+  Future<Album> fetchAlbum() async {
+    final response = await http
+    // URL here would be 'http://$ip/$command/?id=$id'
+        .get(Uri.parse('http://192.168.4.1/release/?id=123'));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return Album.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}
+
+class Album {
+  final int ack;
+  final int distance;
+
+
+  const Album({
+    required this.ack,
+    required this.distance,
+
+  });
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      ack: json['ack'],
+      distance: json['distance'],
+
+    );
+  }
+}
+
+
+

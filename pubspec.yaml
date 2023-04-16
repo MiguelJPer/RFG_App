@@ -37,6 +37,7 @@ dependencies:
   fluster: ^1.2.0
   map_controller_plus: ^2.0.0
   geolocator: ^9.0.2
+  http: ^0.13.5
 
 
 
