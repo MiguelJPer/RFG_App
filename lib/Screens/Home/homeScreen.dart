@@ -101,23 +101,17 @@ class _ListState extends State<homeScreen> {
                           child: Column(
                             children: <Widget>[
                           ElevatedButton(
-                          child: Text("Get User ID"),
+                          child: Text("Get Trap Distance"),
                           onPressed: () {
-                            setState(() {
-                              order = "userID";
-                            });
+                           _getDistance();
                             _getAlbum();
                           },
                           ),
                               ElevatedButton(
-                                child: Text("Get Trap ID"),
+                                child: Text("Check Battery Level"),
                                 onPressed: () {
-                    setState(() {
-                    order = "id";
-                    });
-                    _getAlbum();
-
-
+                                  _getVoltage();
+                                  _getAlbum();
                                 },
                               ),
                               ElevatedButton(
@@ -288,9 +282,11 @@ class DeviceAPI {
   GET response.
    */
   Future<Album> fetchAlbum() async {
-    final response = await http
-    // URL here would be 'http://$ip/$command/?id=$id'
-        .get(Uri.parse('http://192.168.4.1/release/?id=123'));
+    final response = await
+
+        http.get(Uri.parse('http://192.168.4.1/release/?id=123'));
+        http.get(Uri.parse('http://192.168.4.1/ping/?id=123'));
+        http.get(Uri.parse('http://192.168.4.1/voltage/?id=123'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -325,14 +321,56 @@ void _releaseTrap() async{
   }
 }
 
+void _getDistance() async{
+  const id = "123";
+
+  Future<Album> fetchAlbum() async {
+    final response = await http
+    // URL here would be 'http://$ip/$command/?id=$id'
+        .get(Uri.parse('http://192.168.4.1/ping/?id=123'));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return Album.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}
+
+void _getVoltage() async{
+  const id = "123";
+
+  Future<Album> fetchAlbum() async {
+    final response = await http
+    // URL here would be 'http://$ip/$command/?id=$id'
+        .get(Uri.parse('http://192.168.4.1/voltage/?id=123'));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return Album.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}
+
 class Album {
   final int ack;
   final int distance;
+  final int voltage;
 
 
   const Album({
     required this.ack,
     required this.distance,
+    required this.voltage,
 
   });
 
@@ -340,6 +378,7 @@ class Album {
     return Album(
       ack: json['ack'],
       distance: json['distance'],
+      voltage: json['voltage'],
 
     );
   }
