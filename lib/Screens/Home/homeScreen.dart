@@ -31,53 +31,24 @@ class homeScreen extends StatefulWidget {
 class _ListState extends State<homeScreen> {
   List<LatLng> MyIcon = [];
 
-  late Future<Album> futureAlbum;
-  late String order = "";
+  late Future<voltageAlbum> futureVAlbum;
+  late Future<releaseAlbum> futureRAlbum;
+  late Future<distanceAlbum> futureDAlbum;
 
-  /*
-  Creates a new API and updates futureAlbum. Called each time a button is called.
-  In the actual code it will have an "Order" input to change the fetchAlbum() order.
-  */
-  void _getAlbum() {
-    var api = DeviceAPI();
-    futureAlbum = api.fetchAlbum();
+
+  void _getVoltage() {
+    var api = voltageAPI();
+    futureVAlbum = api.fetchAlbum();
+  }
+  void _releaseTrap() {
+    var api = releaseAPI();
+    futureRAlbum = api.fetchAlbum();
+  }
+  void _getDistance() {
+    var api = distanceAPI();
+    futureDAlbum = api.fetchAlbum();
   }
 
-  /*
-  Updates the FutureBuilder widget that shows the information by retrieving the
-  correct data from the Album according to the input order, else it returns
-  an empty string.
-  */
-  Widget _getProperWidget(String order) {
-    if (order != "") {
-      return FutureBuilder<Album>(
-        future: futureAlbum,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (order == "ack") {
-              return Text(
-                snapshot.data!.ack.toString(),
-                textAlign: TextAlign.center,
-              );
-            }
-            if (order == "distance") {
-              return Text(
-                snapshot.data!.distance.toString(),
-                textAlign: TextAlign.center,
-              );
-            }
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-
-          // By default, show a loading spinner.
-          return const CircularProgressIndicator();
-        },
-      );
-    } else {
-      return const Text("");
-    }
-  }
 
 
   @override
@@ -101,25 +72,37 @@ class _ListState extends State<homeScreen> {
                           child: Column(
                             children: <Widget>[
                           ElevatedButton(
-                          child: Text("Get Trap Distance"),
+                          child: Text("Get Trap Distance", style: TextStyle(fontSize: 20)),
                           onPressed: () {
                            _getDistance();
-                            _getAlbum();
+                           Navigator.pop(context, 'Exit');
                           },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue, // Background color
+                              foregroundColor: Colors.white, // Text Color (Foreground color)
+                            ),
                           ),
                               ElevatedButton(
-                                child: Text("Check Battery Level"),
+                                child: Text("Check Battery Level", style: TextStyle(fontSize: 20),),
                                 onPressed: () {
                                   _getVoltage();
-                                  _getAlbum();
+                                  Navigator.pop(context, 'Exit');
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue, // Background color
+                                  foregroundColor: Colors.white, // Text Color (Foreground color)
+                                ),
                               ),
                               ElevatedButton(
-                                child: Text("Release Trap"),
+                                child: Text("Release Trap", style: TextStyle(fontSize: 20),),
                                 onPressed: ()  {
                                   _releaseTrap();
-                                  _getAlbum();
+                                  Navigator.pop(context, 'Exit');
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue, // Background color
+                                  foregroundColor: Colors.white, // Text Color (Foreground color)
+                                ),
                               )
                             ],
                           ),
@@ -272,59 +255,25 @@ void _getCurrentLocation() async {
 }
 
 
+class distanceAlbum {
+  final int ack;
+  final int distance;
 
+  const distanceAlbum({
+    required this.ack,
+    required this.distance,
+  });
 
-class DeviceAPI {
-  static const id = "123";
-  /*
-  Function to perform GET request with input String "Order" that changes the
-  $command variable depending on the button pressed. Returns an Album with the
-  GET response.
-   */
-  Future<Album> fetchAlbum() async {
-    final response = await
-
-        http.get(Uri.parse('http://192.168.4.1/release/?id=123'));
-        http.get(Uri.parse('http://192.168.4.1/ping/?id=123'));
-        http.get(Uri.parse('http://192.168.4.1/voltage/?id=123'));
-
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return Album.fromJson(jsonDecode(response.body));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
-    }
+  factory distanceAlbum.fromJson(Map<String, dynamic> json) {
+    return distanceAlbum(
+      ack: json['ack'],
+      distance: json['distance'],
+    );
   }
 }
+class distanceAPI {
 
-
-void _releaseTrap() async{
-  const id = "123";
-
-  Future<Album> fetchAlbum() async {
-    final response = await http
-    // URL here would be 'http://$ip/$command/?id=$id'
-        .get(Uri.parse('http://192.168.4.1/release/?id=123'));
-
-    if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return Album.fromJson(jsonDecode(response.body));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
-    }
-  }
-}
-
-void _getDistance() async{
-  const id = "123";
-
-  Future<Album> fetchAlbum() async {
+  Future<distanceAlbum> fetchAlbum() async {
     final response = await http
     // URL here would be 'http://$ip/$command/?id=$id'
         .get(Uri.parse('http://192.168.4.1/ping/?id=123'));
@@ -332,7 +281,7 @@ void _getDistance() async{
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return Album.fromJson(jsonDecode(response.body));
+      return distanceAlbum.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -341,10 +290,26 @@ void _getDistance() async{
   }
 }
 
-void _getVoltage() async{
-  const id = "123";
+class voltageAlbum {
+  final int ack;
+  final int voltage;
 
-  Future<Album> fetchAlbum() async {
+  const voltageAlbum({
+    required this.ack,
+    required this.voltage,
+  });
+
+  factory voltageAlbum.fromJson(Map<String, dynamic> json) {
+    return voltageAlbum(
+      ack: json['ack'],
+      voltage: json['voltage'],
+    );
+  }
+}
+
+class voltageAPI {
+
+  Future<voltageAlbum> fetchAlbum() async {
     final response = await http
     // URL here would be 'http://$ip/$command/?id=$id'
         .get(Uri.parse('http://192.168.4.1/voltage/?id=123'));
@@ -352,7 +317,7 @@ void _getVoltage() async{
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return Album.fromJson(jsonDecode(response.body));
+      return voltageAlbum.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -361,28 +326,37 @@ void _getVoltage() async{
   }
 }
 
-class Album {
+
+class releaseAlbum {
   final int ack;
-  final int distance;
-  final int voltage;
 
-
-  const Album({
+  const releaseAlbum({
     required this.ack,
-    required this.distance,
-    required this.voltage,
-
   });
 
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
+  factory releaseAlbum.fromJson(Map<String, dynamic> json) {
+    return releaseAlbum(
       ack: json['ack'],
-      distance: json['distance'],
-      voltage: json['voltage'],
-
     );
   }
 }
 
+class releaseAPI {
 
 
+  Future<releaseAlbum> fetchAlbum() async {
+    final response = await http
+
+        .get(Uri.parse('http://192.168.4.1/release/?id=123'));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return releaseAlbum.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
+  }
+}

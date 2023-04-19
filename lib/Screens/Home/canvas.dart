@@ -68,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ? const homeScreen()
             :currentIndex == 1
             ? const listScreen()
+
             : const settingScreen(),
 
       ),
